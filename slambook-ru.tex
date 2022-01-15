@@ -1,0 +1,102 @@
+% !Mode:: "TeX:UTF-8"
+\documentclass[a4paper,9pt,openleft]{book}
+\input{latex/package}
+\input{latex/option}
+\input{latex/hack}
+
+% suggested format in Springer
+%i.Title page
+%ii.Author details and  Springer copyright page
+%iii.Dedication page
+%iv.Acknowledgments
+%v.Preface
+%vi.Table of contents
+%vii.Introduction
+
+%\includecomment{English}
+\includecomment{Russian}
+\excludecomment{English}
+%\excludecomment{Russian}
+
+\begin{document}
+%% Title page
+\begin{English}
+    \title{Introduction to Visual SLAM\\From Theory to Practice}
+\end{English}
+
+\begin{Russian}
+    \title{Введение в визуальный SLAM:\\от теории к практике}
+\end{Russian}
+\author{Xiang Gao and Tao Zhang}
+\date{\today}
+
+\frontmatter
+\maketitle
+
+%% Author info & copy right
+
+%% dedication page
+\clearpage
+\begin{English}
+    \begin{center}
+    	\thispagestyle{empty}
+    	\vspace*{\fill}
+        \usefont{T1}{LobsterTwo-LF}{bx}{it}
+            \Large \emph{To my beloved Lilian and Shenghan}
+    	\vspace*{\fill}
+    \end{center}
+\end{English}
+
+\begin{Russian}
+    \begin{center}
+        \thispagestyle{empty}
+        \vspace*{\fill}
+%        \usefont{T1}{LobsterTwo-LF}{bx}{it}
+        \Large \emph{Моим любимым Lilian и Shenghan}
+        \vspace*{\fill}
+    \end{center}
+\end{Russian}
+
+%% ack
+\include{chapters/acknowledge}
+
+%% preface
+\include{chapters/preface}
+
+\tableofcontents
+
+\mainmatter
+\addtocontents{toc}{\protect\setcounter{tocdepth}{2}}
+\hypersetup{bookmarksdepth=2}
+
+\part{Fundamental  Knowledge}
+
+\include{chapters/whatSlam}
+\include{chapters/rigidBody}
+\include{chapters/lieGroup}
+\include{chapters/cameraModel}
+\include{chapters/nonlinearOptimization}
+
+%\part{SLAM Technologies}
+%\include{chapters/vo1}
+%\include{chapters/vo2}
+%\include{chapters/backend1}
+%\include{chapters/backend2}
+%\include{chapters/loopclosure}
+%\include{chapters/mapping}
+%\include{chapters/designTracker}
+%\include{chapters/state-of-the-art}
+
+\appendix
+\addtocontents{toc}{\protect\setcounter{tocdepth}{0}}
+\hypersetup{bookmarksdepth=2}
+
+%\input{chapters/gaussian-distribution}
+%\input{chapters/matrix-derivatives}
+
+\backmatter
+\small
+\bibliographystyle{ieeetr}
+\bibliography{ref}
+\newpage
+\end{document}

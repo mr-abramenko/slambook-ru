@@ -1,0 +1,77 @@
+% !Mode:: "TeX:UTF-8"
+\chapter{Gaussian Distribution}
+\label{cpt:app-A}
+\section{Gaussian Distribution}
+If way say a random variable $x$ satisfies a Gaussian distribution $N(\mu, \sigma)$, then its \textit{pdf} is:
+\begin{equation}
+p\left( x \right) = \frac{1}{{\sqrt {2\pi } \sigma }}\exp \left( { - \frac{1}{2}\frac{{{{\left( {x - \mu } \right)}^2}}}{{{\sigma ^2}}}} \right).
+\end{equation}
+
+The matrix form is:
+\begin{equation}
+p\left( \mathbf{x} \right) = \frac{1}{{\sqrt {(2\pi)^N  \det \left( \boldsymbol{\Sigma } \right) }}}\exp \left( { - \frac{1}{2}{{\left( {\mathbf{x} - \boldsymbol{\mu} } \right)}^T}{\boldsymbol{\Sigma} ^{ - 1}}\left( {\mathbf{x} - \boldsymbol{\mu} } \right)} \right).
+\end{equation}
+
+\section{Transform of Gaussian Variables}
+\subsection{Linear Transform}
+Suppose we have two independent Gaussian variables:
+\[
+\mathbf{x} \sim N( \boldsymbol{\mu}_x, \boldsymbol{\Sigma}_{xx} ), \quad \mathbf{y} \sim N( \boldsymbol{\mu}_y, \boldsymbol{\Sigma}_{yy} ),
+\]
+the sum of them are still Gaussian: 
+\begin{equation}
+\mathbf{x}+\mathbf{y} \sim N( \boldsymbol{\mu}_x + \boldsymbol{\mu}_y, \boldsymbol{\Sigma}_{xx} + \boldsymbol{\Sigma}_{yy}).
+\end{equation}
+
+If we multiply $\mathbf{x}$ with a constant factor $a$, then $a \mathbf{x}$ satisfies:
+\begin{equation}
+a\mathbf{x} \sim N( a \boldsymbol{\mu}_x, a^2 \boldsymbol{\Sigma}_{xx}).
+\end{equation}
+
+If we take a linear transform of $\mathbf{x}$ with $\mathbf{y} = \mathbf{A} \mathbf{x}$, then $\mathbf{y}$ satisfies:
+\begin{equation}
+\mathbf{y} \sim N( \mathbf{A} \boldsymbol{\mu}_x, \mathbf{A} \boldsymbol{\Sigma}_{xx} \mathbf{A}^T).
+\end{equation}
+
+\subsection{Normalized Product}
+If we want to fuse two Gaussian estimations like $\mathbf{x}$ and $\mathbf{y}$, assume the fused mean and covariance are $\boldsymbol{\mu}$ and $\boldsymbol{\Sigma}$, then we have:
+\begin{equation}
+\begin{array}{l}
+{\boldsymbol{\Sigma}^{-1}} = \boldsymbol{\Sigma}_{xx}^{-1} + \boldsymbol{\Sigma}_{yy}^{-1} \\
+\boldsymbol{\Sigma}^{-1} \boldsymbol{\mu} = \boldsymbol{\Sigma}_{xx}^{-1}{\boldsymbol{\mu}_x} + \boldsymbol{\Sigma}_{yy}^{-1}{\boldsymbol{\mu}_y}.
+\end{array}
+\end{equation}
+
+This formula can be extended to the product of any number of Gaussian distributions.
+
+\subsection{Joint and Conditional Distribution}
+If $\mathbf{x}$ and $\mathbf{y}$ are not independent, then their joint distribution is: 
+\begin{equation}
+p(\mathbf{x}, \mathbf{y}) = N\left( {\left[ {\begin{array}{*{20}{c}}
+		{{\boldsymbol{\mu}_x}}\\
+		{{\boldsymbol{\mu}_y}}
+		\end{array}} \right],\left[ {\begin{array}{*{20}{c}}
+		{{\boldsymbol{\Sigma}_{xx}}}&{{\boldsymbol{\Sigma}_{xy}}}\\
+		{{\boldsymbol{\Sigma}_{yx}}}&{{\boldsymbol{\Sigma}_{yy}}}
+		\end{array}} \right]} \right).
+\end{equation}
+
+Since $p\left( {\mathbf{x}, \mathbf{y}} \right) = p\left( {\mathbf{x}|\mathbf{y}} \right)p\left( \mathbf{y} \right)$, we can find that the conditional distribution $p(\mathbf{x}|\mathbf{y})$ satisfies:
+\begin{equation}
+p\left( {\mathbf{x} | \mathbf{y} } \right) = N\left( {{\boldsymbol{\mu}_x} + {\boldsymbol{\Sigma}_{xy}} \boldsymbol{\Sigma}_{yy}^{ - 1} \left( {\mathbf{y} - {\boldsymbol{\mu}_y}} \right),{\boldsymbol{\Sigma}_{xx}} - {\boldsymbol{\Sigma}_{xy}} \boldsymbol{\Sigma}_{yy}^{ - 1}{\boldsymbol{\Sigma}_{yx}}} \right).
+\end{equation}
+
+\section{Example of Joint Distribution}
+\label{sec:gauss-example}
+Let's take an example of the Kalman filter. Consider a random variable $\mathbf{x} \sim N( \boldsymbol{\mu}_x, \boldsymbol{\Sigma}_{xx})$, and another variable $\mathbf{y}$ has:
+\begin{equation}
+\mathbf{y} = \mathbf{Ax} + \mathbf{b} + \mathbf{w},
+\end{equation}
+where $\mathbf{A}, \mathbf{b}$ is the linear coefficient matrix and bias, $\mathbf{w}$ is the white noise that satisfies: $\mathbf{w} \sim N(\mathbf{0}, \mathbf{R})$.
+
+Then we can calculate $\mathbf{y}$'s distribution:
+\begin{equation}
+p\left( \mathbf{y} \right) = N\left( {\mathbf{A}{\boldsymbol{\mu}_x} + \mathbf{b}, \mathbf{R} + \mathbf{A} {\boldsymbol{\Sigma}_{xx}}{\mathbf{A}^T}} \right).
+\end{equation}
+
+This provides the theoretical basis for the prediction part of the Kalman filter.
