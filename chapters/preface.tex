@@ -105,7 +105,7 @@
 \begin{Russian}
     Эта книга познакомит вас с историей, теорией, алгоритмами и исследовательским статусом SLAM, а также объяснит полную систему SLAM, разбив ее на несколько модулей: \textit{визуальная одометрия}, \textit{оптимизация серверной части}, \textit{построение карты}, и \textit{обнаружение замыкания цикла}. Мы будем сопровождать читателей шаг за шагом, чтобы реализовать каждый основной алгоритм, обсудим, почему они эффективны, в каких ситуациях они плохо обусловлены, и поможем запустить код на ваших собственных машинах. Вы познакомитесь с критической математической теорией и знаниями в области программирования и будете использовать различные библиотеки, включая \textit{Eigen}, \textit{OpenCV}, \textit{PCL}, \textit{g2o} и \textit{Ceres}, а также познакомитесь с их использованием в Linux.
     
-    Ну хватит разговоров, в добрый путь!
+    Ну хватит разговоров, в Добрый путь!
 \end{Russian}
 
 
@@ -149,114 +149,224 @@
     \end{itemize}
 \end{Russian}
 
-From lecture \ref{cpt:7}, we will be discussing SLAM algorithms, starting with visual odometry (VO) and followed by the map building problems:
-\begin{itemize}
-	\item Lecture \ref{cpt:7}: feature-based visual odometry, which is currently the mainstream in VO. Contents include feature extraction and matching, epipolar geometry calculation, Perspective-n-Point (PnP) algorithm, Iterative Closest Point (ICP) algorithm, and Bundle Adjustment (BA), etc. You will run these algorithms either by calling \textit{OpenCV} functions or constructing your own optimization problem in \textit{Ceres} and \textit{g2o}.
+\begin{English}
+    From lecture \ref{cpt:7}, we will be discussing SLAM algorithms, starting with visual odometry (VO) and followed by the map building problems:
+    \begin{itemize}
+    	\item Lecture \ref{cpt:7}: feature-based visual odometry, which is currently the mainstream in VO. Contents include feature extraction and matching, epipolar geometry calculation, Perspective-n-Point (PnP) algorithm, Iterative Closest Point (ICP) algorithm, and Bundle Adjustment (BA), etc. You will run these algorithms either by calling \textit{OpenCV} functions or constructing your own optimization problem in \textit{Ceres} and \textit{g2o}.
+    
+    	\item Lecture \ref{cpt:8}: direct (or intensity-based) method for VO. You will learn the optical flow principle and the direct method. The practice part is about writing single-layer and multi-layer optical flow and direct method to implement a two-view VO.
+    
+    	\item Lecture \ref{cpt:9}: backend optimization. We will discuss Bundle Adjustment in detail and show the relationship between its sparse structure and the corresponding graph model. You will use \textit{Ceres} and \textit{g2o} separately to solve the same BA problem.
+    
+    	\item Lecture \ref{cpt:backend2}: pose graph in the backend optimization. Pose graph is a more compact representation for BA, which converts all map points into constraints between keyframes. You will use \textit{g2o} to optimize a pose graph.
+    
+    	\item Lecture \ref{cpt:11}: loop closure detection, mainly Bag-of-Word (BoW) based method. You will use DBoW3 to train a dictionary from images and detect loops in videos.
+    
+    	\item Lecture \ref{cpt:12}: map building. We will discuss how to estimate the depth of pixels in monocular SLAM  (and show why they are unreliable). Compared with monocular depth estimation, building a dense map with RGB-D cameras is much easier. You will write programs for epipolar line search and patch matching to estimate depth from monocular images and then build a point cloud map and octagonal treemap from RGB-D data.
+    
+    	\item Lecture \ref{cpt:13}: a practice chapter for stereo VO. You will build a visual odometry framework by yourself by integrating the previously learned knowledge and solve problems such as frame and map point management, keyframe selection, and optimization control.
+    
+    	\item Lecture \ref{cpt:14}: current open-source SLAM projects and future development direction. We believe that after reading the previous chapters, you can understand other people's approaches easily and be capable of achieving new ideas of your own.
+    \end{itemize}
+    
+    Finally, if you don't understand what we are talking about at all, congratulations! This book is right for you!
+\end{English}
 
-	\item Lecture \ref{cpt:8}: direct (or intensity-based) method for VO. You will learn the optical flow principle and the direct method. The practice part is about writing single-layer and multi-layer optical flow and direct method to implement a two-view VO.
+\begin{Russian}
+    С лекции \ref{cpt:7} мы обсудим алгоритмы SLAM, начиная с визуальной одометрии (ВО) и заканчивая проблемами построения карты: 
+    \begin{itemize}
+        \item Лекция \ref{cpt:7}: визуальная одометрия на основе признаков (feature-based visual odometry), которая в настоящее время является основной в ВО. Содержание включает извлечение и сопоставление признаков, вычисления с использованием эпиполярной геометрии, алгоритм Perspective-n-Point (PnP), алгоритм Iterative Closest Point (ICP) и Bundle Adjustment (BA) и т.д. Вы cможете запустить эти алгоритмы, воспользовавшись функциями \textit{OpenCV} или сформулировать собственную задачу оптимизации в \textit{Ceres} и \textit{g2o}.
+        
+        \item Лекция \ref{cpt:8}: прямой (или основанный на интенсивности) метод определения ВО. Вы изучите принцип оптического потока (optical flow) и прямой метод (direct method). Практическая часть главы посвящена написанию однослойного и многослойного оптического потока и прямому методу реализации двух-ракурсной ВО.
+        
+        \item Лекция \ref{cpt:9}: внутренняя оптимизация (backend optimization). Мы подробно обсудим Bundle Adjustment и покажем взаимосвязь между его разреженной структурой и соответствующей графовой моделью. Вы будете использовать \textit{Ceres} и \textit{g2o} по отдельности для решения одной и той же задачи BA.
+        
+        \item Лекция \ref{cpt:backend2}: граф поз во внутренней оптимизации. Граф поз --- это более компактное представление для BA, которое преобразует все точки карты в ограничения между ключевыми кадрами. Вы будете использовать \textit{g2o} для оптимизации графа поз.
+        
+        \item Лекция \ref{cpt:11}: обнаружение замыкания цикла (loop closure), в основном метод на основе Bag-of-Word (BoW). Вы будете использовать DBoW3 для обучения словаря из изображений и обнаружения циклов в видео.
+        
+        \item Лекция \ref{cpt:12}: построение карты. Мы обсудим, как оценить глубину пикселей в монокулярном SLAM (и покажем, почему они ненадежны). По сравнению с монокулярной оценкой глубины построение плотной карты с RGB-D камерами намного проще. Вы напишите программы для поиска эпиполярных линий и сопоставления патчей для оценки глубины по монокулярным изображениям, а затем построите карту в виде облака точек и восьмиугольную древовидную карту по данным RGB-D.
+        
+        \item Лекция \ref{cpt:13}: практическая глава для стерео ВО. Вы самостоятельно создадите структуру визуальной одометрии, объединив полученные ранее знания и решите такие задачи, как управление кадрами и точками карты, выбор ключевых кадров и управление оптимизацией.
+        
+        \item Лекция \ref{cpt:14}: текущие проекты SLAM с открытым исходным кодом и направления дальнейшего развития. Мы верим, что после прочтения предыдущих глав вы сможете легко понять подходы других людей и сможете реализовать собственные новые идеи.
+    \end{itemize}
+    
+    Наконец, если вы вообще не понимаете, о чем мы идет речь, поздравляю! Эта книга именно для вас!
+\end{Russian}
 
-	\item Lecture \ref{cpt:9}: backend optimization. We will discuss Bundle Adjustment in detail and show the relationship between its sparse structure and the corresponding graph model. You will use \textit{Ceres} and \textit{g2o} separately to solve the same BA problem.
+\begin{English}
+    \section*{Source Code}
+\end{English}
 
-	\item Lecture \ref{cpt:backend2}: pose graph in the backend optimization. Pose graph is a more compact representation for BA, which converts all map points into constraints between keyframes. You will use \textit{g2o} to optimize a pose graph.
+\begin{Russian}
+    \section*{Исходный код программ}
+\end{Russian}
 
-	\item Lecture \ref{cpt:11}: loop closure detection, mainly Bag-of-Word (BoW) based method. You will use DBoW3 to train a dictionary from images and detect loops in videos.
+\begin{English}
+    All source code in this book is hosted on Github:
 
-	\item Lecture \ref{cpt:12}: map building. We will discuss how to estimate the depth of pixels in monocular SLAM  (and show why they are unreliable). Compared with monocular depth estimation, building a dense map with RGB-D cameras is much easier. You will write programs for epipolar line search and patch matching to estimate depth from monocular images and then build a point cloud map and octagonal treemap from RGB-D data.
+    {\hfill\url{https://github.com/gaoxiang12/slambook2}\hfill}
+    
+    Note the \textit{slambook2} refers to the second version in which we added a lot of extra experiments.
+    
+    Check out the English version by:
+    {\hfill git checkout -b en origin-en\hfill}
+\end{English}
 
-	\item Lecture \ref{cpt:13}: a practice chapter for stereo VO. You will build a visual odometry framework by yourself by integrating the previously learned knowledge and solve problems such as frame and map point management, keyframe selection, and optimization control.
+\begin{Russian}
+    Исходный код программ для книги расположен на Github:
 
-	\item Lecture \ref{cpt:14}: current open-source SLAM projects and future development direction. We believe that after reading the previous chapters, you can understand other people's approaches easily and be capable of achieving new ideas of your own.
-\end{itemize}
+    {\hfill\url{https://github.com/gaoxiang12/slambook2}\hfill}
 
-Finally, if you don't understand what we are talking about at all, congratulations! This book is right for you!
+    Обратите внимание, что \textit{slambook2} относится ко второй версии оригинальной книги на китайском языке, в которую добавлено много дополнительных экспериментов.
 
-\section*{Source Code}
+    Ознакомиться с английской версией книги можно по ссылке:
+    {\hfill https://github.com/gaoxiang12/slambook-en \hfill}
 
-All source code in this book is hosted on Github:
+    Ознакомиться с русской версией книги можно по ссылке:
+    {\hfill https://github.com/mr-abramenko/slambook-ru \hfill}
+\end{Russian}
 
-{\hfill\url{https://github.com/gaoxiang12/slambook2}\hfill}
+\begin{English}
+    It is strongly recommended that readers download them for viewing at any time. The code is divided into chapters. For example, the contents of the \textit{7th} lecture will be placed in folder \textit{ch7}. Some of the small libraries used in the book can be found in the ``3rdparty'' folder as compressed packages. For large and medium-sized libraries like \textit{OpenCV}, we will introduce their installation methods when they first appear. If you have any questions regarding the code, click the \textit{issue} button on GitHub to submit. If there is indeed a problem with the code, we will correct them in time. If you are not accustomed to using Git, you can also click the  \textit{Download} button on the right side to download a zipped file to your local drive.
+\end{English}
 
-Note the \textit{slambook2} refers to the second version in which we added a lot of extra experiments.
+\begin{Russian}
+    Читателям настоятельно рекомендуется скачать код для просмотра в любое время. Код разделен на главы. Например, содержимое лекции \textit{7} помещено в папку \textit{ch7}. Некоторые из небольших библиотек, используемых в книге, можно найти в папке ``3rdparty'' в виде сжатых пакетов. Для больших и средних библиотек, таких как \textit{OpenCV}, мы продемонстрируем методы их установки первом из появлении в книге. Если у вас есть какие-либо вопросы относительно кода, нажмите кнопку \textit{issue} на GitHub, и задайте его. Если действительно есть проблемы с кодом, мы исправим их. Если вы не привыкли использовать Git, вы также можете нажать кнопку \textit{Code->Download ZIP}, чтобы загрузить архив с кодом на локальный диск.
+\end{Russian}
+    
+\begin{English}
+    \section*{Targeted Readers}
+\end{English}
 
-Check out the English version by:
-{\hfill git checkout -b en origin-en\hfill}
+\begin{Russian}
+   \section*{Целевая аудитория}
+\end{Russian}
 
-It is strongly recommended that readers download them for viewing at any time. The code is divided into chapters. For example, the contents of the \textit{7th} lecture will be placed in folder \textit{ch7}. Some of the small libraries used in the book can be found in the ``3rdparty'' folder as compressed packages. For large and medium-sized libraries like \textit{OpenCV}, we will introduce their installation methods when they first appear. If you have any questions regarding the code, click the \textit{issue} button on GitHub to submit. If there is indeed a problem with the code, we will correct them in time. If you are not accustomed to using Git, you can also click the  \textit{Download} button on the right side to download a zipped file to your local drive.
+\begin{English}
+    This book is for students and researchers interested in SLAM. Reading this book needs specific prerequisites, we assume that you have the following knowledge:
+\end{English}
 
-\section*{Targeted Readers}
+\begin{Russian}
+    Эта книга предназначена для студентов и исследователей, интересующихся SLAM. Для чтения этой книги необходимы определенные навыки, мы предполагаем, что у вас есть следующие знания:
+\end{Russian}
 
-This book is for students and researchers interested in SLAM. Reading this book needs specific prerequisites, we assume that you have the following knowledge:
+\begin{English}
+    \begin{itemize}
+    	\item Calculus, Linear Algebra, Probability Theory. These are the fundamental mathematical knowledge that most readers should have learned during undergraduate study. You should at least understand what a matrix and a vector are, and what it means by doing differentiation and integration. For more advanced mathematical knowledge required, we will introduce in this book as we proceed.
+     
+    	\item Basic C++ Programming. As we will be using C++ as our major programming language, it is recommended that the readers are at least familiar with its basic concepts and syntax. For example, you should know what a class is, how to use the C++ standard library, how to use template classes, etc. We will try our best to avoid using tricks, but we really can not avert them in certain situations. We will also adopt some of the C++11 standards, but don't worry. They will be explained if necessary.
+    
+    	\item Linux Basics. Our development environment is Linux instead of Windows, and we will only provide source code for Linux. We believe that mastering Linux is an essential skill for SLAM researchers, and please  don't ask for Windows related issues. After going through this book's contents, we think you will agree with us \footnote{Linux is not that popular in China as our computer science education starts very lately around the 1990s.}. In Linux, the configuration of related libraries is so convenient, and you will gradually appreciate the benefit of mastering it. If you have never used a Linux system, it will be beneficial to find some Linux learning materials and spend some time reading them (the first few chapters of an introductory book should be sufficient). We do not ask readers to have superb Linux operating skills, but we do hope readers know how to find a terminal and enter a code directory. There are some self-test questions on Linux at the end of this chapter. If you have answers to them, you should be able to quickly understand the code in this book.
+    \end{itemize}
+\end{English}
 
-\begin{itemize}
-	\item Calculus, Linear Algebra, Probability Theory. These are the fundamental mathematical knowledge that most readers should have learned during undergraduate study. You should at least understand what a matrix and a vector are, and what it means by doing differentiation and integration. For more advanced mathematical knowledge required, we will introduce in this book as we proceed.
-	\item Basic C++ Programming. As we will be using C++ as our major programming language, it is recommended that the readers are at least familiar with its basic concepts and syntax. For example, you should know what a class is, how to use the C++ standard library, how to use template classes, etc. We will try our best to avoid using tricks, but we really can not avert them in certain situations. We will also adopt some of the C++11 standards, but don't worry. They will be explained if necessary.
+\begin{Russian}
+    
+\end{Russian}
 
-	\item Linux Basics. Our development environment is Linux instead of Windows, and we will only provide source code for Linux. We believe that mastering Linux is an essential skill for SLAM researchers, and please  don't ask for Windows related issues. After going through this book's contents, we think you will agree with us \footnote{Linux is not that popular in China as our computer science education starts very lately around the 1990s.}. In Linux, the configuration of related libraries is so convenient, and you will gradually appreciate the benefit of mastering it. If you have never used a Linux system, it will be beneficial to find some Linux learning materials and spend some time reading them (the first few chapters of an introductory book should be sufficient). We do not ask readers to have superb Linux operating skills, but we do hope readers know how to find a terminal and enter a code directory. There are some self-test questions on Linux at the end of this chapter. If you have answers to them, you should be able to quickly understand the code in this book.
-\end{itemize}
+\begin{English}
+    Readers interested in SLAM but do not have the knowledge mentioned above may find it difficult to proceed with this book. If you do not understand the basics of C++, you can read some introductory books such as \textit{C ++ Primer Plus}. If you do not have the relevant math knowledge, we also suggest reading some relevant math textbooks first. Nevertheless, most readers who have completed undergraduate study should already have the necessary mathematical backgrounds. Regarding the code, we recommend that you spend time typing them by yourself and tweaking the parameters to see how they affect outputs. This will be very helpful.
 
-Readers interested in SLAM but do not have the knowledge mentioned above may find it difficult to proceed with this book. If you do not understand the basics of C++, you can read some introductory books such as \textit{C ++ Primer Plus}. If you do not have the relevant math knowledge, we also suggest reading some relevant math textbooks first. Nevertheless, most readers who have completed undergraduate study should already have the necessary mathematical backgrounds. Regarding the code, we recommend that you spend time typing them by yourself and tweaking the parameters to see how they affect outputs. This will be very helpful.
+    This book can be used as a textbook for SLAM-related courses or as self-study materials.
+\end{English}
 
-This book can be used as a textbook for SLAM-related courses or as self-study materials.
+\begin{Russian}
+    
+\end{Russian}
 
-\section*{Style}
+\begin{English}
+    \section*{Style}
+\end{English}
 
-This book covers both mathematical theory and programming implementation. Therefore, for the convenience of reading, we will be using different layouts to distinguish the contents.
+\begin{Russian}
+    
+\end{Russian}
 
-\begin{enumerate}
-	\item Mathematical formulas will be listed separately, and important formulas will be assigned with an equation number on the right end of the line, for example:
+\begin{English}
+    This book covers both mathematical theory and programming implementation. Therefore, for the convenience of reading, we will be using different layouts to distinguish the contents.
+\end{English}
 
-	\begin{equation}
-	\mathbf{y} =\mathbf{A}\mathbf{x}.
-	\end{equation}
+\begin{Russian}
+    
+\end{Russian}
 
-	Italics are used for scalars like $a$. Bold symbols are used for vectors and matrices like $\mathbf{a}, \mathbf{A}$. Hollow bold represents special sets, e.g., the real number set $\mathbb{R}$ and the integer set $\mathbb{Z}$. Gothic is used for Lie Algebra, e.g., $\mathfrak{se}(3)$.
+\begin{English}
+    \begin{enumerate}
+    	\item Mathematical formulas will be listed separately, and important formulas will be assigned with an equation number on the right end of the line, for example:
+    
+    	\begin{equation}
+    	\mathbf{y} =\mathbf{A}\mathbf{x}.
+    	\end{equation}
+    
+    	Italics are used for scalars like $a$. Bold symbols are used for vectors and matrices like $\mathbf{a}, \mathbf{A}$. Hollow bold represents special sets, e.g., the real number set $\mathbb{R}$ and the integer set $\mathbb{Z}$. Gothic is used for Lie Algebra, e.g., $\mathfrak{se}(3)$.
+    
+    	\item Source code will be framed into boxes, using a smaller font size, with line numbers on the left. If a code block is long, the box may continue to the next page:
+    	\begin{lstlisting}[language=C++,caption=Code example:]
+    	#include <iostream>
+    	using namespace std;
+    
+    	int main (int argc, char** argv) {
+    		cout << "Hello" << endl;
+    		return 0;
+    	}
+    	\end{lstlisting}
+    
+    	\item When the code block is too long or contains repeated parts with previously listed code, it is not appropriate to be listed entirely. We will only give the important parts and mark them with \textit{part}. Therefore, we strongly recommend that readers download all the source code on GitHub and complete the exercises to better understand the book.
+    
+    	\item Due to typographical reasons, the book's code may be slightly different from the code in GitHub. In that case, please use the code on GitHub.
+    
+    	\item For each of the libraries we use, it will be explained in detail when first appearing but not repeated in the follow-up. Therefore, it is recommended that readers read this book in order.
+    
+    	\item A \textit{goal of study} part will be presented at the beginning of each lecture. A summary and some exercises will be given at the end. The cited references are listed at the end of the book.
+    
+    	\item The chapters with an asterisk mark in front are optional readings, and readers can read them according to their interests. Skipping them will not hinder the understanding of subsequent chapters.
+    
+    	\item Important contents will be marked in \textbf{bold} or \emph{italic}, as we are already accustomed to.
+    
+    	\item Most of the experiments we designed are demonstrative. Understanding them does not mean that you are already familiar with the entire library. Otherwise, this book will be an \textit{OpenCV} or \textit{PCL} document. So we recommend that you spend time on yourselves in further exploring the important libraries frequently used in the book.
+    
+    	\item The book's exercises and optional readings may require you to search for additional materials, so you need to learn to use search engines.
+    \end{enumerate}
+\end{English}
 
-	\item Source code will be framed into boxes, using a smaller font size, with line numbers on the left. If a code block is long, the box may continue to the next page:
-	\begin{lstlisting}[language=C++,caption=Code example:]
-	#include <iostream>
-	using namespace std;
+\begin{Russian}
+    
+\end{Russian}
 
-	int main (int argc, char** argv) {
-		cout << "Hello" << endl;
-		return 0;
-	}
-	\end{lstlisting}
+\begin{English}
+    \section*{Exercises (Self-test Questions)}
+\end{English}
 
-	\item When the code block is too long or contains repeated parts with previously listed code, it is not appropriate to be listed entirely. We will only give the important parts and mark them with \textit{part}. Therefore, we strongly recommend that readers download all the source code on GitHub and complete the exercises to better understand the book.
+\begin{Russian}
+    
+\end{Russian}
 
-	\item Due to typographical reasons, the book's code may be slightly different from the code in GitHub. In that case, please use the code on GitHub.
+\begin{English}
+    \begin{enumerate}
+    	\item Suppose we have a linear equation $\mathbf{Ax}=\mathbf{b}$. If $\mathbf{A}$ and $\mathbf{b}$ are known, how to solve the $\mathbf{x}$? What are the requirements for $\mathbf{A}$ and $\mathbf{b}$ if we want a unique $\mathbf{x}$? (Hint: check the rank of $\mathbf{A}$ and $\mathbf{b}$).
+    
+    	\item What is a Gaussian distribution? What does it look like in a one-dimensional case? How about in a high-dimensional case?
+    
+    	\item What is the \textbf{class} in C++? Do you know STL? Have you ever used them?
+    
+    	\item How do you write a C++ program? (It's completely fine if your answer is ``using Visual C++ 6.0'' \footnote{As I know, many of our undergraduate students are still using this version of VC++ in the university. }).
+    
+    	\item Do you know the C++11 standard? Which new features have you heard of or used? Are you familiar with any other standard?
+    
+    	\item Do you know Linux? Have you used at least one of the popular distributions (not including Android), such as Ubuntu?
+    
+    	\item What is the directory structure of Linux? What basic commands do you know? (e.g., \textit{ls}, \textit{cat}, etc.)
+    
+    	\item How to install the software in Ubuntu (without using the Software Center)? What directories are software usually installed under? If you only know the fuzzy name of a software (for example, you want to install a library with the word ``eigen'' in its name), how to search it?
+    
+    	\item *Spend an hour learning \textit{vim}. You will be using it sooner or later. You can \textit{vimtutor} into a terminal and read through its contents. We do not require you to operate it very skillfully, as long as you can use it to edit the code in the process of learning this book. Do not waste time on its plugins for now. Do not try to turn vim into an IDE. We will only use it for text editing in this book.
+    
+    \end{enumerate}
+\end{English}
 
-	\item For each of the libraries we use, it will be explained in detail when first appearing but not repeated in the follow-up. Therefore, it is recommended that readers read this book in order.
+\begin{Russian}
+    
+\end{Russian}
 
-	\item A \textit{goal of study} part will be presented at the beginning of each lecture. A summary and some exercises will be given at the end. The cited references are listed at the end of the book.
-
-	\item The chapters with an asterisk mark in front are optional readings, and readers can read them according to their interests. Skipping them will not hinder the understanding of subsequent chapters.
-
-	\item Important contents will be marked in \textbf{bold} or \emph{italic}, as we are already accustomed to.
-
-	\item Most of the experiments we designed are demonstrative. Understanding them does not mean that you are already familiar with the entire library. Otherwise, this book will be an \textit{OpenCV} or \textit{PCL} document. So we recommend that you spend time on yourselves in further exploring the important libraries frequently used in the book.
-
-	\item The book's exercises and optional readings may require you to search for additional materials, so you need to learn to use search engines.
-\end{enumerate}
-
-\section*{Exercises (Self-test Questions)}
-\begin{enumerate}
-	\item Suppose we have a linear equation $\mathbf{Ax}=\mathbf{b}$. If $\mathbf{A}$ and $\mathbf{b}$ are known, how to solve the $\mathbf{x}$? What are the requirements for $\mathbf{A}$ and $\mathbf{b}$ if we want a unique $\mathbf{x}$? (Hint: check the rank of $\mathbf{A}$ and $\mathbf{b}$).
-
-	\item What is a Gaussian distribution? What does it look like in a one-dimensional case? How about in a high-dimensional case?
-
-	\item What is the \textbf{class} in C++? Do you know STL? Have you ever used them?
-
-	\item How do you write a C++ program? (It's completely fine if your answer is ``using Visual C++ 6.0'' \footnote{As I know, many of our undergraduate students are still using this version of VC++ in the university. }).
-
-	\item Do you know the C++11 standard? Which new features have you heard of or used? Are you familiar with any other standard?
-
-	\item Do you know Linux? Have you used at least one of the popular distributions (not including Android), such as Ubuntu?
-
-	\item What is the directory structure of Linux? What basic commands do you know? (e.g., \textit{ls}, \textit{cat}, etc.)
-
-	\item How to install the software in Ubuntu (without using the Software Center)? What directories are software usually installed under? If you only know the fuzzy name of a software (for example, you want to install a library with the word ``eigen'' in its name), how to search it?
-
-	\item *Spend an hour learning \textit{vim}. You will be using it sooner or later. You can \textit{vimtutor} into a terminal and read through its contents. We do not require you to operate it very skillfully, as long as you can use it to edit the code in the process of learning this book. Do not waste time on its plugins for now. Do not try to turn vim into an IDE. We will only use it for text editing in this book.
-
-\end{enumerate}
