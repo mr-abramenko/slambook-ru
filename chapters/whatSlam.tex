@@ -9,7 +9,8 @@
 
 \label{cpt:2}
 
-\begin{mdframed}
+\begin{English}
+    \begin{mdframed}
 	\textbf{Goal of Study}
 	\begin{enumerate}[labelindent=0em,leftmargin=1.5em]
 		\item Understand which modules a visual SLAM framework consists of, and what task each module carries out.
@@ -18,89 +19,261 @@
 		\item Learn the basic usage of CMake.
 	\end{enumerate}
 \end{mdframed}
+\end{English}
 
-This lecture summarizes the structure of a visual SLAM system as an outline of subsequent chapters. The practice part introduces the fundamentals of environment setup and program development. We will make a small ``Hello SLAM'' program at the end.
+\begin{Russian}
+    \begin{mdframed}
+	\textbf{Цели лекции}
+	\begin{enumerate}[labelindent=0em,leftmargin=1.5em]
+        \item Понять, из каких модулей состоит визуальный SLAM и какую задачу выполняет каждый из модулей.
+        \item Настроить среду программирования и подготовиться к экспериментам.
+        \item Понять, как скомпилировать и запустить программу под Linux, и как ее отлаживать, в случае возникновения проблем.
+        \item Изучить основы использования CMake.
+	\end{enumerate}
+\end{mdframed}
+\end{Russian}
+
+\begin{English}
+    This lecture summarizes the structure of a visual SLAM system as an outline of subsequent chapters. The practice part introduces the fundamentals of environment setup and program development. We will make a small ``Hello SLAM'' program at the end.
+\end{English}
+
+\begin{Russian}
+    Эта лекция дает общее представление о структуре системы визуального SLAM.
+    Практическая часть лекции знакомит с основами по настройке среды разработки программ и самой разработкой. 
+    Завершится лекция написанием небольшой программы: ``Hello SLAM''.
+\end{Russian}
 
 \newpage
-%\includepdf{resources/other/ch2.pdf}
-%\newpage
+\includepdf{resources/other/ch2.pdf}
+\newpage
 
-\section{Meet ``Little Carrot''}
-Suppose we assembled a robot called \emph{Little Carrot}, as shown in the following figure:
+\begin{English}
+    \section{Meet ``Little Carrot''}
+    Suppose we assembled a robot called \emph{Little Carrot}, as shown in the following figure:
+\end{English}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.8\textwidth]{resources/whatIsSLAM/carrot.pdf}
-	\caption{The sketch of robot \emph{Little Carrot}}
-\end{figure}
+\begin{Russian}
+    \section{Встречайте ``Little Carrot''}
+    Предположим, мы собрали робота по имени \emph{Little Carrot}, который продемонстрирован на следующем рисунке:
+\end{Russian}
 
-Although it looks a bit like the Android robot, it has nothing to do with the Android system. We put a laptop into its trunk (so that we can debug programs at any time). So, what do we expect it to do?
+\begin{English}
+    \begin{figure}
+    	\centering
+    	\includegraphics[width=0.8\textwidth]{resources/whatIsSLAM/carrot.pdf}
+    	\caption{The sketch of robot \emph{Little Carrot}}
+    \end{figure}
+\end{English}
 
-We hope \textit{Little Carrot} has the ability of autonomous moving. Many domestic robots are placed statically on desktops. They can chat with people or play music, but a tablet computer nowadays can also deliver the same tasks. As a robot, we hope Little Carrot can move freely in a room. Wherever we say hello to it, it can come to us right away.
+\begin{Russian}
+    \begin{figure}
+    	\centering
+    	\includegraphics[width=0.8\textwidth]{resources/whatIsSLAM/carrot.pdf}
+    	\caption{Эскиз робота \emph{Little Carrot}}
+    \end{figure}
+\end{Russian}
 
-First of all, such a robot needs wheels and motors to move, so we installed wheels on it (gait control for humanoid robots is very complicated, which we will not be considered here). Now with the wheels, the robot is able to move, but without an effective navigation system, \textit{Little Carrot} does not know where a target of action is, and it can do nothing but wander around blindly. Even worse, it may hit a wall and cause damage. To avoid this, we installed cameras on its head, with the intuition that such a robot should look similar to a human. Indeed, with eyes, brains, and limbs, humans can walk freely and explore any environment, so we (somehow naively) think that our robot should be able to achieve it too. Well, to make Little Carrot able to explore a room, we find it at least needs to know two things:
+\begin{English}
+    Although it looks a bit like the Android robot, it has nothing to do with the Android system. We put a laptop into its trunk (so that we can debug programs at any time). So, what do we expect it to do?
 
-\begin{enumerate}
-	\item Where am I? - It's about \emph{localization}.
-	\item What is the surrounding environment like? - It's about \emph{map building}.
-\end{enumerate}
+    We hope \textit{Little Carrot} has the ability of autonomous moving. Many domestic robots are placed statically on desktops. They can chat with people or play music, but a tablet computer nowadays can also deliver the same tasks. As a robot, we hope Little Carrot can move freely in a room. Wherever we say hello to it, it can come to us right away.
+\end{English}
 
-\textit{Localization} and \textit{map building} can be seen as the perception in both inward and outward directions. As a completely autonomous robot, \textit{Little Carrot} needs to understand its own state (i.e., the location) and the external environment (i.e., \ the map). Of course, there are many different approaches to solve these two problems. For example, we can lay guiding rails on the floor of the room, or paste a lot of artificial markers such as QR code pictures on the wall, or mount radio localization devices on the table. If you are outdoor, you can also install a GNSS receiver (like the one in a cell phone or a car) on the head of Little Carrot. With these devices, can we claim that the localization problem has been resolved? Let's categorize these sensors (see Fig.~\ref{fig:sensors}) into two classes.
+\begin{Russian}
+    Хотя робот немного похож на робота Android, он не имеет ничего общего с системой Android. В его багажник мы кладем ноутбук (чтобы в любой момент можно было отлаживать программы). Итак, что мы ожидаем от робота?
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/sensors.jpg}
-	\caption{Different kinds of sensors: (a) QR code; (b) GNSS receiver; (c) Guiding rails; (d) Laser range finder; (e) Inertial measurement unit; (f) Stereo camera; }
-	\label{fig:sensors}
-\end{figure}
+    Мы рассчитываем, что \textit{Little Carrot} умеет двигаться автономно. Многие бытовые роботы статично размещены на рабочих столах. Они могут общаться с людьми или проигрывать музыку, но современные планшеты также могут выполнять те же задачи. Мы надеемся, что \textit{Little Carrot} сможет свободно передвигаться по комнате. Где бы мы ни поздоровались с ним, он может сразу к нам приехать.
+\end{Russian}
 
-The first class is non-intrusive sensors, which are entirely self-contained inside a robot, such as wheel encoders, cameras, laser scanners, etc. They do not assume a cooperative environment around the robot. The other class is intrusive sensors depending on a prepared environment, such as the above-mentioned guiding rails, QR codes, etc. Intrusive sensors can usually locate a robot directly, solving the localization problem in a simple and effective manner. However, since they require changes in the environment, the usage scope is often limited to a certain degree. For example, if there is no GPS signal or guiding rails cannot be laid, what should we do in those cases?
+\begin{English}
+    First of all, such a robot needs wheels and motors to move, so we installed wheels on it (gait control for humanoid robots is very complicated, which we will not be considered here). Now with the wheels, the robot is able to move, but without an effective navigation system, \textit{Little Carrot} does not know where a target of action is, and it can do nothing but wander around blindly. Even worse, it may hit a wall and cause damage. To avoid this, we installed cameras on its head, with the intuition that such a robot should look similar to a human. Indeed, with eyes, brains, and limbs, humans can walk freely and explore any environment, so we (somehow naively) think that our robot should be able to achieve it too. Well, to make Little Carrot able to explore a room, we find it at least needs to know two things:
 
-We can see that the intrusive sensors place certain constraints on the external environment. A localization system based on them can only function properly when those constraints are met in the real world. Otherwise, the localization approach cannot be carried out anymore, like GPS localization system normally doesn't work well in indoor environments. Therefore, although this type of sensor is reliable and straightforward, it does not work as a general solution. In contrast, non-intrusive sensors, such as laser scanners, cameras, wheel encoders, Inertial Measurement Units (IMUs), etc., can only observe indirect physical quantities rather than the direct location. For example, a wheel encoder measures the wheel rotation angle. An IMU measures the angular velocity and the acceleration. A camera or a laser scanner observes the external environment in a specific form like point-clouds and images. We have to apply algorithms to infer positions from these indirect observations. While this sounds like a roundabout tactic, the more obvious benefit is that it does not make any demands on the environment, making it possible for this localization framework to be applied to an unknown environment. Therefore, they are called self-localization in many research areas.
+    \begin{enumerate}
+    	\item Where am I? - It's about \emph{localization}.
+    	\item What is the surrounding environment like? - It's about \emph{map building}.
+    \end{enumerate}
+\end{English}
 
-Looking back at the SLAM definitions discussed earlier, we emphasized an unknown environment in SLAM problems. In theory, we should not presume which environment the \textit{Little Carrot} will be used (but in reality, we will have a rough range, such as indoor or outdoor), which means that we can not assume that external sensors like GPS can work smoothly. Therefore, the use of portable non-intrusive sensors to achieve SLAM is our main focus. In particular, when talking about visual SLAM, we generally refer to \textit{cameras}' usage to solve the localization and map building problems.
+\begin{Russian}
+    Во-первых, такому роботу нужны колеса и моторы для движения, поэтому мы установили на него колеса (управление походкой для роботов-гуманоидов очень сложное, рассматривать их не будем). Теперь с колесами робот может двигаться, но без эффективной навигационной системы \textit{Little Carrot} не знает, где находится цель действия, и ничего не может делать, кроме как бродить вслепую. Хуже того, он может удариться о стену и нанести ущерб. Чтобы этого избежать, мы установили ему на голову камеры, интуитивно понимая, что такой робот должен быть похож на человека. Действительно, с глазами, мозгом и конечностями люди могут свободно ходить и исследовать окружающую среду, поэтому мы (как-то наивно) думаем, что наш робот тоже должен быть в состоянии это делать. Что ж, чтобы \textit{Little Carrot} мог исследовать комнату, мы обнаружили, что ему необходимо знать как минимум две вещи:
+    \begin{enumerate}
+    	\item Где я? - Речь идет о \emph{локализации}.
+        \item Что из себя представляет окружающая среда? - Речь идет о \emph{создании карты}.
+    \end{enumerate}
+\end{Russian}
 
-Visual SLAM is the main subject of this book, so we are particularly interested in what the Little Carrot's eyes can do. The cameras used in SLAM are different from the commonly seen single-lens reflex (SLR) cameras. It is often much cheaper and does not carry an expensive lens. It shoots at the surrounding environment at a specific rate, forming a continuous video stream. An ordinary camera can capture images at 30 frames per second, while high-speed cameras can do faster. The camera can be roughly divided into three categories: monocular, stereo, and RGB-D, as shown by the following figure~\ref{fig:cameras}. Intuitively, a monocular camera has only one camera. A stereo camera has two. The principle of an RGB-D camera is more complicated. In addition to collecting color images, it can also measure the distance of the scene from the camera for each pixel. RGB-D devices usually carry multiple cameras and may adopt a variety of different working principles. In the fifth lecture, we will detail their working principles, and readers just need an intuitive impression for now. Some new special and emerging camera types can also be applied to SLAM, such as panorama camera~\cite{Pretto2011}, event camera~\cite{Rueckauer2016}. Although they are occasionally seen in SLAM applications, so far, they have not become mainstream. From the appearance, we can infer that Little Carrot seems to carry a stereo camera.
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/camera.pdf}
-	\caption{Different kinds of cameras: monocular, RGB-D and stereo. }
-	\label{fig:cameras}
-\end{figure}
+\begin{English}
+    \textit{Localization} and \textit{map building} can be seen as the perception in both inward and outward directions. As a completely autonomous robot, \textit{Little Carrot} needs to understand its own state (i.e., the location) and the external environment (i.e., \ the map). Of course, there are many different approaches to solve these two problems. For example, we can lay guiding rails on the floor of the room, or paste a lot of artificial markers such as QR code pictures on the wall, or mount radio localization devices on the table. If you are outdoor, you can also install a GNSS receiver (like the one in a cell phone or a car) on the head of Little Carrot. With these devices, can we claim that the localization problem has been resolved? Let's categorize these sensors (see Fig.~\ref{fig:sensors}) into two classes.
+\end{English}
 
-Now, let's take a look at the pros and cons of using different types of cameras for SLAM.
+\begin{Russian}
+    \textit{Локализацию} и \textit{создание карты} можно рассматривать как внутренне и внешнее восприятие. Будучи полностью автономным роботом, \textit{Little Carrot} должен понимать свое собственное состояние (т.е. местоположение) и внешнюю среду (т.е. \ карту). Конечно, существует множество различных подходов к решению этих двух проблем. Например, мы можем положить на пол комнаты направляющие, или наклеить на стену множество искусственных маркеров, таких как QR-коды, или установить на столе устройства радиолокации. Если мы находимся на улице, мы также можем установить GNSS приемник (например, на подобии того, что есть в мобильном телефоне или автомобиле) на голове \textit{Little Carrot}. Можем ли мы утверждать, что с этими устройствами проблема локализации решена? Давайте разделим эти датчики (см. рис.~\ref{fig:sensors}) на два класса.
+\end{Russian}
 
-\subsubsection{Monocular Camera}
+\begin{English}
+    \begin{figure}
+    	\centering
+    	\includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/sensors.jpg}
+    	\caption{Different kinds of sensors: (a) QR code; (b) GNSS receiver; (c) Guiding rails; (d) Laser range finder; (e) Inertial measurement unit; (f) Stereo camera; }
+    	\label{fig:sensors}
+    \end{figure}
+\end{English}
 
-The SLAM system that uses only one camera is called Monocular SLAM. This sensor structure is particularly simple, and the cost is particularly low. Therefore the monocular SLAM has been very attractive to researchers. You must have seen the output data of a monocular camera: photo. Yes, what can we do with a single photo?
+\begin{Russian}
+    \begin{figure}
+    	\centering
+    	\includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/sensors.jpg}
+    	\caption{Различные виды датчиков: (а) QR-код; (b) приемник ГНСС;  (с) направляющие; (d) лазерный дальномер; (e) инерциальная единица измерения; (f) стерео-камера;}
+    	\label{fig:sensors}
+    \end{figure}
+\end{Russian}
 
-A photo is essentially a \textit{projection} of a scene onto a camera's imaging plane. It reflects a three-dimensional world in a two-dimensional form. Evidently, there is one dimension lost during this projection process: the so-called \textit{depth} (or distance). In a monocular case, we can not obtain the distance between objects in the scene and the camera by using a single image. Later, we will see that this distance is critical for SLAM. Because we humans have seen many photos, we formed a natural sense of distances for most scenes, helping us determine the distance relationship among the objects in the image. For example, we can recognize objects in the image and correlate them with their approximate size obtained from daily experience. The close objects will occlude the distant objects; the sun, the moon, and other celestial objects are infinitely far away; an object will have shadow if it is under sunlight. This common-sense can help us determine the distance of objects, but there are also certain cases that confuse us, and we can no longer distinguish the distance and proper size of an object. The following figure~\ref{fig:why-depth} shows an example. We can not determine whether the figures are real people or small toys purely based on the image itself. Unless we change our view angle, explore the three-dimensional structure of the scene. It may be a big but far away object, but it may also be a close but small object. They may appear to be the same size in an image due to the perspective projection effect.
+\begin{English}
+    The first class is non-intrusive sensors, which are entirely self-contained inside a robot, such as wheel encoders, cameras, laser scanners, etc. They do not assume a cooperative environment around the robot. The other class is intrusive sensors depending on a prepared environment, such as the above-mentioned guiding rails, QR codes, etc. Intrusive sensors can usually locate a robot directly, solving the localization problem in a simple and effective manner. However, since they require changes in the environment, the usage scope is often limited to a certain degree. For example, if there is no GPS signal or guiding rails cannot be laid, what should we do in those cases?
+\end{English}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/why-depth.pdf}
-	\caption{We cannot tell if the people are real humans or just small toys from a single image.}
-	\label{fig:why-depth}
-\end{figure}
+\begin{Russian}
+    Первый класс — это неинтрузивные датчики, которые полностью автономны внутри робота, такие как колесные энкодеры, камеры, лазерные сканеры и т. д. Они не предполагают модификации среды вокруг робота для работы с ними. Другой класс — это интрузивные датчики, требующие подготовки среды, такие как вышеупомянутые направляющие, QR-коды и т. д. Интрузивные датчики обычно могут напрямую определить местонахождение робота, решая проблему локализации простым и эффективным способом. Однако, поскольку они требуют изменений в среде, область их использования часто в определенной степени ограничена. Например, если нет сигнала GPS или нельзя проложить направляющие, что делать в этих случаях?
+\end{Russian}
 
-Since the image taken by a monocular camera is just a 2D projection of the 3D space, if we want to recover the 3D structure, we have to change the camera's view angle. Monocular SLAM adopts the same principle. We move the camera and estimate its motion, as well as the distances and sizes of the objects in the scene, namely the structure of the scene. So how do we estimate these movements and structures? From the everyday experience, we know that if a camera moves to the right, the objects in the image will move to the left, which gives us an inspiration of inferring motion. On the other hand, we also know that closer objects move faster, while distant objects move slower. Thus, when the camera moves, the movement of these objects on the image forms pixel \textit{disparity}. Through calculating the disparity, we can quantitatively determine which objects are far away and which objects are close.
+\begin{English}
+    We can see that the intrusive sensors place certain constraints on the external environment. A localization system based on them can only function properly when those constraints are met in the real world. Otherwise, the localization approach cannot be carried out anymore, like GPS localization system normally doesn't work well in indoor environments. Therefore, although this type of sensor is reliable and straightforward, it does not work as a general solution. In contrast, non-intrusive sensors, such as laser scanners, cameras, wheel encoders, Inertial Measurement Units (IMUs), etc., can only observe indirect physical quantities rather than the direct location. For example, a wheel encoder measures the wheel rotation angle. An IMU measures the angular velocity and the acceleration. A camera or a laser scanner observes the external environment in a specific form like point-clouds and images. We have to apply algorithms to infer positions from these indirect observations. While this sounds like a roundabout tactic, the more obvious benefit is that it does not make any demands on the environment, making it possible for this localization framework to be applied to an unknown environment. Therefore, they are called self-localization in many research areas.
+\end{English}
 
-However, even if we know which objects are near and far, they are still only relative values. For example, when we are watching a movie, we can tell which objects in the movie scene are bigger than the others, but we can not determine the real size of those objects -- are the buildings real high-rise buildings or just models on a table? Is it a real monster that destroys a building, or just an actor wearing special clothing? Intuitively, if the camera's movement and the scene size are doubled simultaneously, monocular cameras see the same. Likewise, multiplying this size by any factor, we will still get the same picture. This demonstrates that the trajectory and map obtained from monocular SLAM estimation will differ from the actual trajectory and map with an unknown factor, which is called the \textit{scale} \footnote{We will explain the mathematical reason in the visual odometry chapter.}. Since monocular SLAM can not determine this real scale purely based on images, this is also called the scale ambiguity.
+\begin{Russian}
+    Мы видим, что интрузивные датчики накладывают определенные ограничения на внешнюю среду. Система локализации, основанная на них, может функционировать должным образом только тогда, когда эти ограничения соблюдаются в реальном мире. В противном случае подход к локализации не может быть реализован, так, например, система GPS локализации в помещении работает плохо или не работает вовсе. Поэтому, хотя этот тип датчика надежен и прост, он не работает как универсальное решение. Напротив, неинтрузивные датчики, такие как лазерные сканеры, камеры, колесные энкодеры, инерциальные измерительные блоки (IMU) и т. д., могут измерять только косвенные физические величины, а не прямое местоположение. Например, колесный энкодер измеряет угол поворота колеса. IMU измеряет угловую скорость и ускорение. Камера или лазерный сканер получают данные наблюдения за внешней средой в определенной форме, такой как облака точек и изображения. В этом случае, чтобы определить позицию робота из этих косвенных наблюдений, мы должны применить алгоритмы. Хотя это звучит как обходная тактика, более очевидным преимуществом является то, что такой подход не предъявляет никаких требований к среде, что позволяет применять подход для локализации в неизвестной среде. Поэтому во многих областях исследований подход называют самолокализацией.
+\end{Russian}
 
-In monocular SLAM, depth can only be calculated with translational movement, and the real scale cannot be determined. These two things could cause significant trouble when applying monocular SLAM into real-world applications. The fundamental cause is that depth can not be determined from a single image. So, in order to obtain real-scaled depth, we start to use stereo and RGB-D cameras.
+\begin{English}
+    Looking back at the SLAM definitions discussed earlier, we emphasized an unknown environment in SLAM problems. In theory, we should not presume which environment the \textit{Little Carrot} will be used (but in reality, we will have a rough range, such as indoor or outdoor), which means that we can not assume that external sensors like GPS can work smoothly. Therefore, the use of portable non-intrusive sensors to achieve SLAM is our main focus. In particular, when talking about visual SLAM, we generally refer to \textit{cameras}' usage to solve the localization and map building problems.
+\end{English}
 
-\subsubsection{Stereo Cameras and RGB-D Cameras}
-The purpose of using stereo and RGB-D cameras is to measure the distance between objects and the camera, to overcome the shortcomings of monocular cameras that distances are unknown. Once distances are known, the 3D structure of a scene can be recovered from a single frame and eliminates scale ambiguity. Although both stereo and RGB-D cameras can measure the distance, their principles are not the same. A stereo camera consists of two synchronized monocular cameras, displaced with a known distance, namely the baseline. Because the physical distance of the baseline is known, we can calculate each pixel's 3D position in a very similar way to our human eyes. We can estimate the objects' distances based on the differences between the images from the left and right eye, and we can try to do the same on computers (see Fig.~\ref{fig:stereo}). We can also extend stereo camera to multi-camera systems if needed, but basically, there is no much difference.
+\begin{Russian}
+    Оглядываясь назад на определение SLAM, обсуждавшееся ранее, мы подчеркивали неизвестную среду в задачах SLAM. Мы не накладываем ограничения на то, в какой среде будет использоваться \textit{Little Carrot} (но на самом деле у нас будет приблизительный диапазон, например, в помещении или на улице). Это значит, что мы не можем предполагать, что внешние датчики, такие как GPS будут работать бесперебойно. Поэтому использование портативных неинтрузивных датчиков для решения задачи SLAM является нашим основным направлением. В частности, говоря о визуальном SLAM, мы имеем в виду использование \textit{камер} для решения проблем локализации и построения карты.
+\end{Russian}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/stereo.pdf}
-    \caption{Distance is calculated from the disparity of two stereo image pair.}
-    \label{fig:stereo}
-\end{figure}
+\begin{English}
+    Visual SLAM is the main subject of this book, so we are particularly interested in what the Little Carrot's eyes can do. The cameras used in SLAM are different from the commonly seen single-lens reflex (SLR) cameras. It is often much cheaper and does not carry an expensive lens. It shoots at the surrounding environment at a specific rate, forming a continuous video stream. An ordinary camera can capture images at 30 frames per second, while high-speed cameras can do faster. The camera can be roughly divided into three categories: monocular, stereo, and RGB-D, as shown by the following figure~\ref{fig:cameras}. Intuitively, a monocular camera has only one camera. A stereo camera has two. The principle of an RGB-D camera is more complicated. In addition to collecting color images, it can also measure the distance of the scene from the camera for each pixel. RGB-D devices usually carry multiple cameras and may adopt a variety of different working principles. In the fifth lecture, we will detail their working principles, and readers just need an intuitive impression for now. Some new special and emerging camera types can also be applied to SLAM, such as panorama camera~\cite{Pretto2011}, event camera~\cite{Rueckauer2016}. Although they are occasionally seen in SLAM applications, so far, they have not become mainstream. From the appearance, we can infer that Little Carrot seems to carry a stereo camera.
+\end{English}
 
-Stereo cameras usually require a significant amount of computational power to (unreliably) estimate depth for each pixel, which is really clumsy compared to human beings. The depth range measured by a stereo camera is related to the baseline length. The longer a baseline is, the farther it can measure. So stereo cameras mounted on autonomous vehicles are usually quite big. Depth estimation for stereo cameras is achieved by comparing images from the left and right cameras and not relying on other sensing equipment. Thus stereo cameras can be applied both indoor and outdoor. The disadvantage of stereo cameras or multi-camera systems is that the configuration and calibration process is complicated. Their depth range and accuracy are limited by baseline length and camera resolution. Moreover, stereo matching and disparity calculation also consume many computational resources and usually require GPU or FPGA to accelerate to generate real-time depth maps. Therefore, in most state-of-the-art algorithms, the computational cost is still one of the major problems of stereo cameras.
+\begin{Russian}
+    Визуальный SLAM — основная тема этой книги, поэтому нас особенно интересует, на что способны глаза \textit{Little Carrot}. Камеры, используемые в SLAM, отличаются от широко известных зеркальных камер (SLR --- single-lens reflex) камер. Нам подойдет камера, которая намного дешевле и не используют дорогой объектив, но  формирует непрерывный видеопоток. Обычная камера может снимать изображения со скоростью 30 кадров в секунду, а высокоскоростные камеры могут делать это быстрее. Камеры можно условно разделить на три категории: монокулярные, стерео и RGB-D, как показано на следующем рисунке~\ref{fig:cameras}. Интуитивно понятно, что монокулярная камера имеет только одну камеру. У стерео-камеры их две. Принцип действия камеры RGB-D сложнее. Помимо получения цветных изображений, она также может измерять расстояние сцены от камеры для каждого пикселя изображения. Устройства RGB-D обычно имеют несколько камер и могут использовать различные принципы работы. В пятой лекции мы подробно расскажем об их принципах работы, а пока читателям хватит и интуитивного понимания. Некоторые новые специальные типы камер также могут быть применены в SLAM, например, панорамная камера~\cite{Pretto2011}, камера событий~\cite{Rueckauer2016}. Иногда их можно увидеть в SLAM приложениях, но они пока не стали массовыми. Судя по внешнему виду \textit{Little Carrot}, можем сделать вывод, что у нашего робота есть стерео-камера.
+\end{Russian}
+
+\begin{English}
+    \begin{figure}
+    	\centering
+    	\includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/camera.pdf}
+    	\caption{Different kinds of cameras: monocular, RGB-D and stereo. }
+    	\label{fig:cameras}
+    \end{figure}
+    Now, let's take a look at the pros and cons of using different types of cameras for SLAM.
+\end{English}
+
+\begin{Russian}
+    \begin{figure}
+    	\centering
+    	\includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/camera.pdf}
+    	\caption{Различные типы камер: монокулярная, RGB-D, стерео.}
+    	\label{fig:cameras}
+    \end{figure}
+    Теперь давайте взглянем на плюсы и минусы использования различных типов камер для SLAM.
+\end{Russian}
+
+\begin{English}
+    \subsubsection{Monocular Camera}
+    
+    The SLAM system that uses only one camera is called Monocular SLAM. This sensor structure is particularly simple, and the cost is particularly low. Therefore the monocular SLAM has been very attractive to researchers. You must have seen the output data of a monocular camera: photo. Yes, what can we do with a single photo?    
+\end{English}
+
+\begin{Russian}
+    \subsubsection{Монокулярная камера}
+
+    Система SLAM, в которой используется только одна камера, называется монокуляным SLAM. В виду простого набора сенсоров и из низкой стоимости монокулярный SLAM оказался очень привлекательным для исследователей. Вы наверняка видели выходные данные монокулярной камеры - это фото. Что мы можем сделать с одной-единственной фотографией?
+\end{Russian}
+
+\begin{English}
+    A photo is essentially a \textit{projection} of a scene onto a camera's imaging plane. It reflects a three-dimensional world in a two-dimensional form. Evidently, there is one dimension lost during this projection process: the so-called \textit{depth} (or distance). In a monocular case, we can not obtain the distance between objects in the scene and the camera by using a single image. Later, we will see that this distance is critical for SLAM. Because we humans have seen many photos, we formed a natural sense of distances for most scenes, helping us determine the distance relationship among the objects in the image. For example, we can recognize objects in the image and correlate them with their approximate size obtained from daily experience. The close objects will occlude the distant objects; the sun, the moon, and other celestial objects are infinitely far away; an object will have shadow if it is under sunlight. This common-sense can help us determine the distance of objects, but there are also certain cases that confuse us, and we can no longer distinguish the distance and proper size of an object. The following figure~\ref{fig:why-depth} shows an example. We can not determine whether the figures are real people or small toys purely based on the image itself. Unless we change our view angle, explore the three-dimensional structure of the scene. It may be a big but far away object, but it may also be a close but small object. They may appear to be the same size in an image due to the perspective projection effect.    
+\end{English}
+
+\begin{Russian}
+    Фотография — это, по сути, \textit{проекция} сцены на плоскость изображения камеры. Она отражает трехмерный мир в двухмерном виде. Очевидно, что в процессе проецирования теряется одно измерение: так называемая \textit{глубина} (или расстояние). В случае монокулярной камеры, используя одно изображение, мы не можем получить расстояние между объектами в сцене и камерой. Позже мы увидим, что знание глубины критично для SLAM. Поскольку мы, люди, видели много фотографий, у нас сформировалось естественное чувство расстояния для большинства сцен, что помогло нам определить расстояние между объектами на изображении. Например, мы можем распознавать объекты на изображении и соотносить их с их приблизительными размерами, полученными из повседневного опыта. Близкие объекты будут загораживать удаленные объекты; солнце, луна и другие небесные объекты бесконечно далеки; объект будет иметь тень, если на него падает солнечный свет. Этот здравый смысл может помочь нам определить расстояние до объектов, но есть также определенные случаи, которые сбивают нас с толку, в результате мы не можем определить расстояние и надлежащий размер объекта. На рисунке~\ref{fig:why-depth} показан такой пример. По этому изображения мы не сможем определить, являются ли фигурки настоящими людьми или маленькими игрушками, до тех пор пока мы не изменим угол обзора и не исследуем трехмерную структуру сцены. объект может быть большой, но далекий, а может быть близкий, но маленький. В то же время, на изображении такие объекты могут казаться одного размера из-за эффекта перспективной проекции.
+\end{Russian}
+
+\begin{English}
+    \begin{figure}
+    	\centering
+    	\includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/why-depth.pdf}
+    	\caption{We cannot tell if the people are real humans or just small toys from a single image.}
+    	\label{fig:why-depth}
+    \end{figure}
+\end{English}
+
+\begin{Russian}
+    \begin{figure}
+    	\centering
+    	\includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/why-depth.pdf}
+    	\caption{По одному изображению мы не можем сказать, являются ли эти люди настоящими или это просто маленькие игрушки.}
+    	\label{fig:why-depth}
+    \end{figure}
+\end{Russian}
+
+\begin{English}
+    Since the image taken by a monocular camera is just a 2D projection of the 3D space, if we want to recover the 3D structure, we have to change the camera's view angle. Monocular SLAM adopts the same principle. We move the camera and estimate its motion, as well as the distances and sizes of the objects in the scene, namely the structure of the scene. So how do we estimate these movements and structures? From the everyday experience, we know that if a camera moves to the right, the objects in the image will move to the left, which gives us an inspiration of inferring motion. On the other hand, we also know that closer objects move faster, while distant objects move slower. Thus, when the camera moves, the movement of these objects on the image forms pixel \textit{disparity}. Through calculating the disparity, we can quantitatively determine which objects are far away and which objects are close.
+\end{English}
+
+\begin{Russian}
+    Поскольку изображение, полученное монокулярной камерой, представляет собой всего лишь двухмерную проекцию трехмерного пространства, то для восстановления трехмерной структуры, мы должны изменить угол обзора камеры. Монокуляреый SLAM использует тот же принцип. Перемещая камеру, мы оцениваем ее движение, а также расстояния до объектов на сцене и их размеры. Итак, как мы это делаем? Из повседневного опыта мы знаем, что если камера движется вправо, объекты на изображении будут двигаться влево, что позволяет нам делать выводы о движении. С другой стороны, мы также знаем, что близкие к камере объекты движутся быстрее, а удаленные — медленнее. Таким образом, при движении камеры движение этих объектов на изображении формирует \textit{disparity} --- пиксельное несоответствие. Вычисляя несоответствие, мы можем количественно определить, какие объекты находятся далеко, а какие близко.
+\end{Russian}
+
+\begin{English}
+    However, even if we know which objects are near and far, they are still only relative values. For example, when we are watching a movie, we can tell which objects in the movie scene are bigger than the others, but we can not determine the real size of those objects -- are the buildings real high-rise buildings or just models on a table? Is it a real monster that destroys a building, or just an actor wearing special clothing? Intuitively, if the camera's movement and the scene size are doubled simultaneously, monocular cameras see the same. Likewise, multiplying this size by any factor, we will still get the same picture. This demonstrates that the trajectory and map obtained from monocular SLAM estimation will differ from the actual trajectory and map with an unknown factor, which is called the \textit{scale} \footnote{We will explain the mathematical reason in the visual odometry chapter.}. Since monocular SLAM can not determine this real scale purely based on images, this is also called the scale ambiguity.
+
+    In monocular SLAM, depth can only be calculated with translational movement, and the real scale cannot be determined. These two things could cause significant trouble when applying monocular SLAM into real-world applications. The fundamental cause is that depth can not be determined from a single image. So, in order to obtain real-scaled depth, we start to use stereo and RGB-D cameras.
+\end{English}
+
+\begin{Russian}
+    Однако даже если мы знаем, какие объекты находятся близко, а какие далеко, это все равно лишь относительные величины. Например, когда мы смотрим фильм, мы можем сказать, какие объекты на сцене больше, чем другие, но мы не можем определить реальный размер этих объектов — являются ли здания настоящими высотными зданиями или просто макетами на столе? Это настоящий монстр, который разрушает здание, или просто актер в специальной одежде? Интуитивно понятно, что если движение камеры и размер сцены удваиваются одновременно, монокулярные камеры видят то же самое. Точно так же, умножая этот размер на любой коэффициент, мы все равно получим ту же картину. Это говорит о том, что траектория и карта, полученные в результате монокулярного SLAM, будут отличаться от фактической траектории и карты с неизвестным масштабным коэффициентом \textit{scale} \footnote{Математическая причина этого явления будет объяснена в главе, посвященной визуальной одометрии.}. Поскольку монокулярный SLAM не позволяет определить реальный масштаб исключительно на основе изображений, это называют неоднозначностью масштаба.
+
+     В монокулярном SLAM глубина может быть рассчитана только при поступательном движении, а реальный масштаб не может быть определен. Эти две вещи могут вызвать серьезные проблемы при применении монокулярного SLAM в реальных приложениях. Основная причина в том, что глубину нельзя определить по одному изображению. Чтобы получить реальную глубину, нужно использовать стерео и RGB-D камеры.
+\end{Russian}
+
+\begin{English}
+    \subsubsection{Stereo Cameras and RGB-D Cameras}
+    The purpose of using stereo and RGB-D cameras is to measure the distance between objects and the camera, to overcome the shortcomings of monocular cameras that distances are unknown. Once distances are known, the 3D structure of a scene can be recovered from a single frame and eliminates scale ambiguity. Although both stereo and RGB-D cameras can measure the distance, their principles are not the same. A stereo camera consists of two synchronized monocular cameras, displaced with a known distance, namely the baseline. Because the physical distance of the baseline is known, we can calculate each pixel's 3D position in a very similar way to our human eyes. We can estimate the objects' distances based on the differences between the images from the left and right eye, and we can try to do the same on computers (see Fig.~\ref{fig:stereo}). We can also extend stereo camera to multi-camera systems if needed, but basically, there is no much difference.
+\end{English}
+
+\begin{Russian}
+    \subsubsection{Стерео-камеры и RGB-D камеры}
+     Целью использования стерео-камер и RGB-D камер является измерение расстояния между объектами и камерой. Таким образом преодолеваются недостатки монокулярных камер, заключающиеся в том, что расстояния неизвестны. Как только расстояния становятся известны, трехмерная структура сцены может быть восстановлена по одному кадру, а неоднозначность масштаба устраняется. Хотя и стереокамеры, и камеры RGB-D могут измерять расстояние, принципы их работы различаются. Стереокамера состоит из двух синхронизированных монокулярных камер, смещенных на известное расстояние друг от друга. Такое расстояние называют базовой линией. Поскольку величина базовой линии известна, мы можем рассчитать трехмерное положение каждого пикселя так же, как это делают наши глаза. Человек оценивает расстояния до объектов, основываясь на различиях между изображениями для левого и правого глаза, и мы можем попытаться сделать то же самое на компьютерах (см. рис.~\ref{fig:stereo}). Мы также можем расширить стерео-камеру до многокамерной системы, если это необходимо, но в принципе особой разницы нет.
+\end{Russian}
+
+\begin{English}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/stereo.pdf}
+        \caption{Distance is calculated from the disparity of two stereo image pair.}
+        \label{fig:stereo}
+    \end{figure}
+\end{English}
+
+\begin{Russian}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.8\textwidth]{./resources/whatIsSLAM/stereo.pdf}
+        \caption{Расстояние рассчитывается по несоответствию двух пар стерео-изображений.}
+        \label{fig:stereo}
+    \end{figure}
+\end{Russian}
+
+\begin{English}
+    Stereo cameras usually require a significant amount of computational power to (unreliably) estimate depth for each pixel, which is really clumsy compared to human beings. The depth range measured by a stereo camera is related to the baseline length. The longer a baseline is, the farther it can measure. So stereo cameras mounted on autonomous vehicles are usually quite big. Depth estimation for stereo cameras is achieved by comparing images from the left and right cameras and not relying on other sensing equipment. Thus stereo cameras can be applied both indoor and outdoor. The disadvantage of stereo cameras or multi-camera systems is that the configuration and calibration process is complicated. Their depth range and accuracy are limited by baseline length and camera resolution. Moreover, stereo matching and disparity calculation also consume many computational resources and usually require GPU or FPGA to accelerate to generate real-time depth maps. Therefore, in most state-of-the-art algorithms, the computational cost is still one of the major problems of stereo cameras.
+\end{English}
+
+\begin{Russian}
+    Стерео-камеры обычно требуют значительных вычислительных ресурсов для (качественной) оценки глубины каждого пикселя, что выглядит необычно, если сравнивать с тем, как это делает человек. Диапазон глубин, измеренный стерео-камерой, связан с длиной базовой линии. Чем длиннее базовая линия, тем дальше может быть измерена глубина. Поэтому стерео-камеры, устанавливаемые на автономные транспортные средства, обычно довольно большие. Оценка глубины для стерео-камер достигается путем сравнения изображений с левой и правой камер без использования другого сенсорного оборудования. Таким образом, стерео-камеры могут применяться как внутри помещений, так и снаружи. Недостатком стерео-камер или многокамерных систем является сложность процесса настройки и калибровки. Их диапазон глубины и точность ограничены длиной базовой линии и разрешением камеры. Кроме того, стерео-сопоставление и вычисление диспаратности (различий между изображениями) также потребляют много вычислительных ресурсов и обычно требуют использования GPU или FPGA для создания карт глубины в режиме реального времени. Таким образом, в большинстве современных алгоритмов требовательность к вычислительным ресурсам по-прежнему является одной из основных проблем стерео-камер.
+\end{Russian}
 
 Depth camera (also known as RGB-D camera, RGB-D will be used in this book) is a new type of camera rising since 2010. Similar to laser scanners, RGB-D cameras adopt infrared structure of light or Time-of-Flight (ToF) principles and measure the distance between objects and the camera by actively emitting light to the object and receive the returned light. This part is not solved by software as a stereo camera, but by physical sensors to save many computational resources compared to stereo cameras (see Fig.~\ref{fig:RGBD}). Common RGB-D cameras include Kinect / Kinect V2, Xtion Pro Live, RealSense, etc. However, most of the RGB-D cameras still suffer from issues including narrow measurement range, noisy data, small field of view, susceptibility to sunlight interference, and unable to measure transparent material. For SLAM purposes, RGB-D cameras are mainly used in indoor environments and are not suitable for outdoor applications \footnote{Note that this book is written in 2016. The statements may be outdated in future.}.
 
